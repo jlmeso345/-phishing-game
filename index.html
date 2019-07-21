@@ -177,7 +177,7 @@
 
 
 
-        function generateGmail() {    
+        function generateGmail() {
             var companylist = ["Spotify", "Now Music", "uTorrent", "A Facebook friend", "Messenger", "Facebook", "Clash of Clans", "WhatsApp", "Instagram", "Twitter", "Snapchat", "Candy Crush", "Steam", "Uber", "Uber Eats", "Barclays Bank", "Monzo Bank", "Norton", "Youtube", "Youtube Gaming", "Netflix", "Rabbit", "Amazon", "Play Store", "Tinder"];
             var company;
             var myEmail = "jackrobins@gmail.com"
@@ -192,9 +192,9 @@
 
             var details = document.getElementById("details");
 
-            addText(details, senderName, "bold");
-            addText(details, " <" + senderAddr + ">\n");
-            addText(details, "To: me <" + myEmail + ">");
+            addText(true, details, senderName, "bold");
+            addText(true, details, " <" + senderAddr + ">\n");
+            addText(true, details, "To: me <" + myEmail + ">");
 
             var head = document.head;
             var content = document.getElementById("email_content");
@@ -210,12 +210,12 @@
             var g_main = googleDOM.getElementById("main_content");
 
 
-            addText(g_title, company + " was granted access to your account.");
-            addText(g_intro, "Hi merklemore,");
-            addText(g_main, "You have succesfully connected " + company + " to your Google Account jackrobins@gmail.com on Thursday, July 22, 2019 3:50 PM (GMT).");
-            addText(g_main, "\n\nIf you did not perform this action then please change your password as soon as possible. ", "bold");
-            addText(g_main, "Click here", "hyperlink", "http://google.com/amp/tiny.cc/permissions-config-5196192324");
-            addText(g_main, " to reset your password or manage authorized devices.")
+            addText(false, g_title, company + " was granted access to your account.");
+            addText(false, g_intro, "Hi jackrobins,");
+            addText(false, g_main, "You have succesfully connected " + company + " to your Google Account jackrobins@gmail.com on Thursday, July 22, 2019 3:50 PM (GMT).");
+            addText(false, g_main, "\n\nIf you did not perform this action then please change your password as soon as possible. ", "bold");
+            addText(false, g_main, "Click here", "hyperlink", "http://google.com/amp/tiny.cc/permissions-config-5196192324");
+            addText(false, g_main, " to reset your password or manage authorized devices.")
 
             var style = document.head.querySelector("style");
             var gStyle = googleDOM.head.querySelector("style");
@@ -288,7 +288,37 @@
         
 
     }
-    function addText(node, string, type="plain", url="none"){
+    function addText(legit, node, ostring, type="plain", url="none"){
+
+        var string = "";
+        if (!legit) {
+            for (var i = 0; i < ostring.length; i++) {
+                if ((Math.floor(Math.random() * 200) + 1) == 1) {
+                    continue;
+                }
+                else if (ostring.charAt(i) == " ") {
+                        if ((Math.floor(Math.random() * 100) + 1) == 1) {
+                            string += "  ";
+                            continue;
+                        }
+                        else {
+                            string += " ";
+                        }
+                }
+                else if ((Math.floor(Math.random() * 150) + 1) == 1) {
+                    string += ostring.charAt(i);
+                    string += ostring.charAt(i);
+                }
+                else {
+                    string += ostring.charAt(i);
+                }
+            }
+        } else {
+            string = ostring;
+        }
+
+        console.log(string);
+
         text = string.split("\n");
         for (var i = 0; i < text.length; i++) {
             if (!text[i] || text[i] === "") {
