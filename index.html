@@ -154,6 +154,45 @@
             letter-spacing: -0.03em;
         }
 
+        .value {
+            position: inline-block;
+            text-align: center;
+            font-weight: bold;
+            font-size: 40px;
+            color: white;
+            width: 100px; 
+            height: 75px;
+            margin: 0px auto;
+            letter-spacing: -.07em;
+        }
+            input[type="range"] {
+            display: block;
+            -webkit-appearance: none;
+            background-color: #bdc3c7;
+            width: 300px;
+            height: 5px;
+            border-radius: 5px;
+            margin: 0 auto;
+            outline: 0;
+        }
+            input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            background-color: #e74c3c;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: .3s ease-in-out;
+        }​
+            input[type="range"]::-webkit-slider-thumb:hover {
+                background-color: white;
+                border: 2px solid #e74c3c;
+        }
+            input[type="range"]::-webkit-slider-thumb:active {
+                transform: scale(1.6);
+        }
+
         </style>
 
     </head>
@@ -163,6 +202,10 @@
                         <button id="legit" class="answer_button draw-border">Legit</button>
                         <button id="phish" class="answer_button draw-border">Phish</button>
                 </div>
+                <div class="value">100</div>
+                    <input type="range" min="1" max="100" step="1" value="100">
+                <br><br><br>
+
                 <div id="dyn_content">
                     <span id="details"></span></span>
                     <div id="email_content"></div>
@@ -170,49 +213,78 @@
             </div>
 
     <script>
-        var companylist = ["Spotify", "Now Music", "uTorrent", "A Facebook friend", "Messenger", "Facebook", "Clash of Clans", "WhatsApp", "Instagram", "Twitter", "Snapchat", "Candy Crush", "Steam", "Uber", "Uber Eats", "Barclays Bank", "Monzo Bank", "Norton", "Youtube", "Youtube Gaming", "Netflix", "Rabbit", "Amazon", "Play Store", "Tinder"];
-        var useralias = ["User", "Customer", "Valued Customer", "Sir/Madam", "macsmith05924"];
-        var myName = "Mac Smith";
-        var myEmail = "macsmith05924@gmail.com";
-        var myEmailLocal = myEmail.split("@")[0];
-        var head = document.head; //required for generation
-        var content = document.getElementById("email_content");
-        var difficulty = (Math.floor(Math.random() * 100) + 1);
-        alert("Difficulty: " + difficulty);
+        var originalDOM = new DOMParser().parseFromString(document.documentElement.outerHTML, "text/html");
+        var company, companylist, useralias, myName, myEmail, myEmailLocal, head, content, difficulty, real, mCount, dCount, mLimit, dLimit;
+        companylist = ["Spotify", "Now Music", "uTorrent", "A Facebook friend", "Messenger", "Facebook", "Clash of Clans", "WhatsApp", "Instagram", "Twitter", "Snapchat", "Candy Crush", "Steam", "Uber", "Uber Eats", "Barclays Bank", "Monzo Bank", "Norton", "Youtube", "Youtube Gaming", "Netflix", "Rabbit", "Amazon", "Play Store", "Tinder"];
+        company = companylist[GNB(0, companylist.length-1)];
+        //SETTING COMPANY TO STATIC FOR DEMO REASONS - WILL CHANGE IN GAME
 
-        difficulty = difficulty/100;
-        
-        mCount = 0;
-        dCount = 0;
-        mLimit = 4;
-        dLimit = 16;
+        var elem = document.querySelector('input[type="range"]');
+       // var sitechoice = GNB(1,2); // FOR TESTING PURPOSES ONLY
 
-        m = 2; //miss factor
-        d = 2.5 // double space/char factor
+        var rangeValue = function() {
+            var diff = elem.value;
+            var target = document.querySelector('.value');
+            target.innerHTML = diff;
+            resetDOM();
+            init(parseInt(diff));
+        }
+        elem.addEventListener("input", rangeValue);
 
-        if (difficulty < 0.5) {
-                console.log("eee" + ((Math.floor(Math.random() * (useralias.length-1)))));
-                myName = useralias[((Math.floor(Math.random() * (useralias.length-1))))];
+        init(100);
+
+    function init(dif) { 
+
+        difficulty = dif/100;
+        console.log(difficulty);
+
+        //companylist = ["Spotify", "Now Music", "uTorrent", "A Facebook friend", "Messenger", "Facebook", "Clash of Clans", "WhatsApp", "Instagram", "Twitter", "Snapchat", "Candy Crush", "Steam", "Uber", "Uber Eats", "Barclays Bank", "Monzo Bank", "Norton", "Youtube", "Youtube Gaming", "Netflix", "Rabbit", "Amazon", "Play Store", "Tinder"];
+        useralias = ["User", "Customer", "Valued Customer", "Sir/Madam", "macsmith05924"];
+        myName = "Mac Smith";
+        myEmail = "macsmith05924@gmail.com";
+        myEmailLocal = myEmail.split("@")[0];
+        head = document.head; //required for generation
+        content = document.getElementById("email_content");
+
+        real = false; //need to set dynamically.
+
+        mCount = 0; //ammount of missed characters (globally)
+        dCount = 0; //ammount of double tapped characters (globally)
+        mLimit = 4; //global miss limit
+        dLimit = 10; //global double  tap limit
+
+        if (difficulty < 0.5) { //should probably change this
+                myName = useralias[GNB(0, useralias.length-1)];
             } else {
                 myName = "Mac Smith";
         }
 
-        var testval  = (Math.floor(Math.random() * 2) + 1);
-        if (testval == 1) {
-            generateGmail();
+        generateGmail();
+        //generatePayPal();
+}
+
+    function resetDOM(){ 
+        var d = document.getElementById("details");
+        var e = document.getElementById("email_content");
+        var h = document.head;
+
+        removeChildElements(d);
+        removeChildElements(e);
+        removeChildElements(h);
+
+        for (var i = 0; i < originalDOM.head.childNodes.length; i++) {
+            document.head.appendChild(originalDOM.head.childNodes[i].cloneNode(true));
         }
-        else {
-            generatePayPal();
-        }
+    }
 
     function generatePayPal() {
             var senderName = "Paypal";
             var senderAddr = generateEmailAddress("service@paypal.com", difficulty);
-            var company = companylist[(Math.floor(Math.random() * companylist.length))];
+            //var company = companylist[GNB(0, companylist.length-1)];
             generateHeader(senderName, senderAddr);
 
-            var amount = (Math.floor(Math.random() * 4) + 1)
-            var fakeTotalCost = (Math.floor(Math.random() * 65) + 5).toFixed(2);
+            var amount = GNB(1, 4)
+            var fakeTotalCost = GNB(5, 65).toFixed(2);
             var fakeVAT = (fakeTotalCost*0.20).toFixed(2);
             var fakeUnitCost = ((fakeTotalCost/amount)*0.8).toFixed(2);
 
@@ -236,23 +308,23 @@
             var p_invoice = paypalDOM.getElementById("invoice_id");
             var p_transaction = paypalDOM.getElementById("transaction_id");
             
-            addText(difficulty, p_intro, "Hello " + myName + ",");
-            addText(difficulty, p_title, "You sent a payment of £" + fakeTotalCost + " GBP to " + company);
-            addText(difficulty, p_main, "You've sent a payment of "+ fakeTotalCost + " GBP to " + company + ", and you'll be billed with PayPal Credit through your PayPal account.\n\n We'll send you an email when your statement is ready. For more information, or to schedule a payment to PayPal Credit, just visit PayPal.");
-            addText(difficulty, p_main, "\n\n If you did not make this payment", "bold");
-            addText(difficulty, p_main, ", click here to review your account security ", "hyperlink", "pay.pal.trust.com/reviewpayment=2342525");
-            addText(difficulty, p_main, "or alternatively you can ");
-            addText(difficulty, p_main, "request an immediate refund.", "hyperlink", "pay.pal-services.com/refund%payment%id=1624authorise$remove" )
-            addText(difficulty, p_merchant, company + "\n");
-            addText(difficulty, p_unit_price, "£" + fakeUnitCost + " GBP")
-            addText(1, p_quantity, amount.toString());
-            addText(1, p_amount, "£" + (fakeUnitCost*amount).toFixed(2) + " GBP");
-            addText(1, p_subtotal, "£" + (fakeUnitCost*amount).toFixed(2) + " GBP");
-            addText(difficulty, p_tax, "£" + fakeVAT + " GBP");
-            addText(1, p_total, "£" + fakeTotalCost + " GBP");
-            addText(1, p_payment, "£" + fakeTotalCost + " GBP")
-            addText(1, p_invoice, " " + generateRandomNumbers(12));
-            addText(1, p_transaction, " " + generateTransactionID(15));
+            addText(p_intro, "Hello " + myName + ",");
+            addText(p_title, "You sent a payment of £" + fakeTotalCost + " GBP to " + company);
+            addText(p_main, "You've sent a payment of "+ fakeTotalCost + " GBP to " + company + ", and you'll be billed with PayPal Credit through your PayPal account.\n\n We'll send you an email when your statement is ready. For more information, or to schedule a payment to PayPal Credit, just visit PayPal.");
+            addText(p_main, "\n\n If you did not make this payment", "bold");
+            addText(p_main, ", click here to review your account security ", "hyperlink", "pay.pal.trust.com/reviewpayment=2342525");
+            addText(p_main, "or alternatively you can ");
+            addText(p_main, "request an immediate refund.", "hyperlink", "pay.pal-services.com/refund%payment%id=1624authorise$remove" )
+            addText(p_merchant, company + "\n");
+            addText(p_unit_price, "£" + fakeUnitCost + " GBP")
+            addText(p_quantity, amount.toString());
+            addText(p_amount, "£" + (fakeUnitCost*amount).toFixed(2) + " GBP");
+            addText(p_subtotal, "£" + (fakeUnitCost*amount).toFixed(2) + " GBP");
+            addText(p_tax, "£" + fakeVAT + " GBP");
+            addText(p_total, "£" + fakeTotalCost + " GBP");
+            addText(p_payment, "£" + fakeTotalCost + " GBP")
+            addText(p_invoice, " " + generateRandomNumberString(12));
+            addText(p_transaction, " " + generateTransactionID(15));
 
             imbedElements(document, paypalDOM);
 
@@ -260,8 +332,9 @@
 
     function generateGmail() {
             var senderName = "Google";
-            var senderAddr = generateEmailAddress("no-reply@accounts.google.com", difficulty);
-            var company = companylist[(Math.floor(Math.random() * companylist.length))];
+            let senderAddr = generateEmailAddress("no-reply@accounts.google.com", difficulty);
+            console.log(senderAddr);
+            //var company = companylist[GNB(0, companylist.length-1)];
             generateHeader(senderName, senderAddr);
 
             //Email body generation begins here
@@ -272,62 +345,118 @@
             var g_intro = googleDOM.getElementById("intro_content");
             var g_main = googleDOM.getElementById("main_content");
 
-            addText(difficulty, g_title, company + " was granted access to your account.");
-            addText(difficulty, g_intro, "Hi " + myName + ",");
-            addText(difficulty, g_main, "You have succesfully connected " + company + " to your Google Account " + myEmail + " on Thursday, July 22, 2019 3:50 PM (GMT).");
-            addText(difficulty, g_main, "\n\nIf you did not perform this action then please change your password as soon as possible. ", "bold");
-            addText(difficulty, g_main, "Click here", "hyperlink", "http://google.com/amp/tiny.cc/permissions-config-5196192324");
-            addText(difficulty, g_main, " to reset your password or manage authorized devices.")
+            addText(g_title, company + " was granted access to your account.");
+            addText(g_intro, "Hi " + myName + ",");
+            addText(g_main, "You have succesfully connected " + company + " to your Google Account " + myEmail + " on Thursday, July 22, 2019 3:50 PM (GMT).");
+            addText(g_main, "\n\nIf you did not perform this action then please change your password as soon as possible. ", "bold");
+            addText(g_main, "Click here", "hyperlink", "http://google.com/amp/tiny.cc/permissions-config-5196192324");
+            addText(g_main, " to reset your password or manage authorized devices.")
 
             imbedElements(document, googleDOM);
        
         }
 
+    
     function generateTransactionID(length) {
         var result = "";
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
         for ( var i = 0; i < length; i++ ) {
-            result += chars.charAt((Math.floor(Math.random() * chars.length)));
+            result += chars.charAt(GNB(0, chars.length-1));
         }
         return result;
     }
-    function generateRandomNumbers(length) {
+    function generateRandomNumberString(length) {
         var result = "";
         for ( var i = 0; i < length; i++ ) {
-            result += (Math.floor(Math.random() * 10) + 1)
+            result += GNB(1,10);
         }
         return result;
     }
 
     function generateHeader(senderName, senderAddr){ 
         var details = document.getElementById("details"); //Email header information (From: / To:)
-        addText(true, details, senderName, "bold"); 
-        addText(true, details, " <" + senderAddr + ">\n To: me <" + myEmail + ">");
+        addText(details, senderName, "bold"); 
+        addText(details, " <" + senderAddr + ">\n To: me <" + myEmail + ">");
     }
 
     function imbedElements(main, email) {
             var style = main.head.querySelector("style"); //base style
             var eStyle = email.head.querySelector("style"); //email style
-            var merged_style = email.createTextNode(eStyle.innerHTML + "\n" + style.innerHTML); //merged style
 
+            var scrambledHeaderCSS = scrambleHeaderCSS(eStyle.innerHTML);
+            var merged_style = email.createTextNode(scrambledHeaderCSS + "\n" + style.innerHTML); //merged style
+            
             removeChildElements(eStyle);
             eStyle.appendChild(merged_style);
-
             head.parentNode.replaceChild(email.head, head);
+
+            scrambleBodyCSS(email.body);
 
             for (var i = 0; i < email.body.childNodes.length; i++) {
                 content.appendChild(email.body.childNodes[i].cloneNode(true));
             }
     }
 
-    function generateEmailAddress(email, realism){
+    function scrambleBodyCSS(body) {
+        var elements = body.getElementsByTagName("*");
         
-        var real = false;
-        var rf; //realism factor
+        for (var i = 0; i < elements.length; i++) {
+
+            if (elements[i].getAttribute("bgcolor")) {
+                if (scaledChance(0.90)) {
+                    elements[i].setAttribute("bgcolor", "#ffffff");
+                }
+            }
+
+            if (elements[i].getAttribute("width")) {
+                if (scaledChance(0.90)) {
+                    elements[i].setAttribute("width", "auto");
+                }
+            }
+
+            if (elements[i].getAttribute("src")) {
+                if (scaledChance(0.50)) {
+                    elements[i].setAttribute("src", "#");
+                }
+            }
+
+            if (elements[i].getAttribute("width")) {
+                if (scaledChance(0.90)) {
+                    elements[i].setAttribute("width", "auto");
+                }
+            }
+
+            if (!(elements[i].style.cssText == "" || elements[i].style == null || !elements[i].style)) {
+                var style = elements[i].style;
+                var newStyle = "";
+                var attributes = style.cssText.toString().split(";");
+
+                for (var k = 0; k < attributes.length-1; k++) {
+                    if (!scaledChance(0.90)) {
+                        newStyle += attributes[k] + ";";
+                    }
+                }
+                elements[i].setAttribute("style", newStyle);
+            } 
+        }   
+    }
+
+    function scrambleHeaderCSS(css) {
+            var newCSS = "";
+            var elements = css.toString().split("}");
+            for (var i = 1; i < elements.length-1; i++) {
+                if (scaledChance(0.90)) {
+                    newCSS += elements[i] + "}";
+                }
+            }
+        return newCSS;
+    }
+
+    function generateEmailAddress(email, realism){ //needs improving, tld needs to be modified/warped
+        
         if (realism == 1) {
-            real = true;
-        } else {
-            rf = realism*1000;
+            return email;
+            //maybe add some variation to make it harder? (real domains)
         }
 
         var fakeEmail = "";
@@ -344,33 +473,32 @@
         }
         var TLD = subdomains[subdomains.length-1]
 
-        var TLDs = ["ru", "net", "info", "gw", "mobi", "us", "ca", "de", "ch", "jp", "es", "nl", "win", "vip"]
+        var TLDs = ["run", "net", "info", "gw", "mobi", "usl", "ca", "de", "ch", "jp", "es", "nl", "win", "vip", ".tc"]
         var pairs = {"a":"ci", "d": "cl", "g": "cj", "m": "rn", "l": "1", "1": "l"}
         var pairdep = [];
         var limit = 0;
         var dropped = false;
 
-        if (((Math.floor(Math.random() * Math.ceil(rf/50)) + 1) == 1) && !real) {
-            var k = ((Math.floor(Math.random() * (fakeLocals.length-1))));
-            fakeEmail += fakeLocals[k] + "@";
+        if (scaledChance(0.5)) {
+            fakeEmail += fakeLocals[GNB(0, fakeLocals-1)] + "@";
         } 
         else {
             fakeEmail += local + "@";
         }
 
         for (var i = 0; i < domain.length; i++) {
-            if ((Math.floor(Math.random() * (Math.ceil(rf/20)*domain.length)) + 1) == 1 && !dropped && !real) { //the longer the more likely
+            if (scaledChance(0.5) && !dropped) { //the longer the more likely
                 dropped = true;
                 continue;
             }
             if (domain.charAt(i) == ".") {
-                if ((Math.floor(Math.random() * 3) + 1) == 1) {
+                if (scaledChance(0.8)) {
                     fakeEmail += "-";
                     continue;
                 }
             }
             if (["a", "d", "g", "m"].includes(domain.charAt(i)) && !pairdep.includes(domain.charAt(i)) && limit < 1 && !dropped) {
-                if (((Math.floor(Math.random() * Math.ceil(rf/10)) + 1) == 1) && !real) { //chance of homographic attack (10)
+                if (scaledChance(0.25)) { //chance of homographic attack (10)
                     fakeEmail += pairs[domain.charAt(i)];
                     pairdep.push(domain.charAt(i));
                     limit += 1;
@@ -384,82 +512,74 @@
             }
         }
         
-        if (!real) {
-            fakeEmail += "." + TLDs[(Math.floor(Math.random() * (TLDs.length-1)))];
+        if (scaledChance(0.85)) { 
+            fakeEmail += "." + TLDs[GNB(0, TLDs.length)];
         } else {
             fakeEmail += "." + TLD;
         }
-
         return fakeEmail;
     }
 
-    function addText(realism, node, ostring, type="plain", url="none"){
 
-        var real = false;
-        var rf; //realism factor
-        if (realism == 1) {
-            real = true;
-        } else {
-            rf = realism*1000;
+
+    function GNB(min, max) { //generate number between
+        return (Math.floor(Math.random() * (max - min + 1)) + min);
+    }
+
+
+    function scaledChance(base) {
+        sf = (1-difficulty) * base;
+        var d = Math.random();
+        if (d < sf) {
+            return true;
         }
-        
-        localmlimit = Math.ceil(ostring.length/75);
-        localdlimit = Math.ceil(ostring.length/75);
-        console.log(localdlimit);
-        localmCount = 0;
-        localdCount = 0;
+        else {
+            return false;
+        }
+    }
 
+    function addText(node, ostring, type="plain", url="none"){
 
-        var string = "";
-        if (!real) {
-            for (var i = 0; i < ostring.length; i++) {
+        if (!real) { //if fake email
+            localmlimit = Math.ceil(ostring.length/75); //local miss limit
+            localdlimit = Math.ceil(ostring.length/75); //local double tap limit
 
-                if (((Math.floor(Math.random() * (Math.ceil(rf/2))) + 1) == 1) && mCount < mLimit && localmCount < localmlimit ) {
-                    var reduction = (Math.floor(Math.random() * 30 + 10))/100
-                    if (m-reduction >= 1) {
-                        m = m-reduction;
-                    } else {
-                        m = 1;
+            localmCount = 0; //amount of misses
+            localdCount = 0; //amount of double taps
+
+            var string = "";
+                for (var i = 0; i < ostring.length; i++) { //iterate through each character
+
+                    if (scaledChance(0.05) && mCount < mLimit && localmCount < localmlimit ) { //miss character
+                        mCount++;
+                        localmCount++;
+                        continue;
                     }
-                    mCount++;
-                    localmCount++;
-                    continue;
-                }
-                else if (ostring.charAt(i) == " ") {
-                        if (((Math.floor(Math.random() * (Math.ceil(rf/2.5))) + 1) == 1) && dCount < dLimit && localdCount < localdlimit) {
-                            string += "  ";
-                            var reduction = (Math.floor(Math.random() * 30 + 10))/100
-                            if (d-reduction >= 1) {
-                                d = d-reduction;
-                            } else {
-                                 d = 1;
+                    else if (ostring.charAt(i) == " ") {
+                            if (scaledChance(0.1) && (dCount < dLimit) && (localdCount < localdlimit)) {
+                                string += "  ";
+                                dCount++;
+                                localdCount++;
+                                continue;
                             }
-                            dCount++;
-                            localdCount++;
-                            continue;
-                        }
-                        else {
-                            string += " ";
-                        }
-                }
-                else if (((Math.floor(Math.random() * (Math.ceil(rf/2.5))) + 1) == 1) && dCount < dLimit && localdCount < localdlimit) {
-                    string += ostring.charAt(i);
-                    string += ostring.charAt(i);
-                    var reduction = (Math.floor(Math.random() * 30 + 10))/100
-                    if (d-reduction >= 1) {
-                        d = d-reduction;
-                    } else {
-                        d = 1;
+                            else {
+                                string += " ";
+                            }
                     }
-                    dCount++;
-                    localdCount++;
+                    else if (scaledChance(0.05) && (dCount < dLimit) && (localdCount < localdlimit)) {
+                        string += ostring.charAt(i) + ostring.charAt(i);
+                        dCount++;
+                        localdCount++;
+                        continue;
+                    }
+                    else {
+                        string += ostring.charAt(i);
+                    }
                 }
-                else {
-                    string += ostring.charAt(i);
-                }
-            }
+
         } else {
-            string = ostring;
+
+            string = ostring; //if real just use original string
         }
 
         text = string.split("\n");
@@ -491,6 +611,11 @@
             }   
         }
     }
+
+    function generateHyperlink(realism, link) {
+
+    }
+
 
     function removeChildElements(parent) { 
             while (parent.firstChild) {
