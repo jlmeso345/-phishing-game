@@ -1,5 +1,6 @@
-<html>
+<!DOCTYPE html>
     <head>
+        <meta http-equiv="x-ua-compatible" content="IE=11">
         <style>
             
         .html, body{
@@ -107,10 +108,10 @@
             height: 100%;
         }
 
-        
         #phish.draw-border:hover::before {
             transition-delay: 0s, 0s, 0.25s;
         }
+
         #phish.draw-border:hover::after {
             transition-delay: 0s, 0.25s, 0s;
         }
@@ -132,9 +133,10 @@
         #legit.draw-border:hover::after {
             transition-delay: 0s, 0.25s, 0s;
         }
+        
         .answer_button {
             display: inline-block;
-            background: #ffffff10;
+            background: #2d2833;
             border: none;
             cursor: pointer;
             font: 700 1.2rem 'Roboto Slab', sans-serif;
@@ -185,6 +187,18 @@
             cursor: pointer;
             transition: .3s ease-in-out;
         }​
+
+        input[type="range"]::-ms-thumb {
+            appearance: none;
+            background-color: #e74c3c;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: .3s ease-in-out;
+        }​
+
             input[type="range"]::-webkit-slider-thumb:hover {
                 background-color: white;
                 border: 2px solid #e74c3c;
@@ -203,11 +217,11 @@
                         <button id="phish" class="answer_button draw-border">Phish</button>
                 </div>
                 <div class="value">100</div>
-                    <input type="range" min="1" max="100" step="1" value="100">
+                    <input type="range" onmin="1" max="100" step="1" value="100">
                 <br><br><br>
 
                 <div id="dyn_content">
-                    <span id="details"></span></span>
+                    <span id="details"></span>
                     <div id="email_content"></div>
                 </div>
             </div>
@@ -223,20 +237,28 @@
        // var sitechoice = GNB(1,2); // FOR TESTING PURPOSES ONLY
 
         var rangeValue = function() {
+            //console.log("hello");
             var diff = elem.value;
             var target = document.querySelector('.value');
             target.innerHTML = diff;
             resetDOM();
             init(parseInt(diff));
         }
-        elem.addEventListener("input", rangeValue);
+
+        if (elem.addEventListener) {
+            //console.log("1");
+            elem.addEventListener("mouseup", rangeValue, false);
+        }
+        else if (elem.attachEvent) {
+            //console.log("2");
+            elem.attachEvent("on"+"input", rangeValue);
+        }
 
         init(100);
 
     function init(dif) { 
-
         difficulty = dif/100;
-        console.log(difficulty);
+        //console.log(difficulty);
 
         //companylist = ["Spotify", "Now Music", "uTorrent", "A Facebook friend", "Messenger", "Facebook", "Clash of Clans", "WhatsApp", "Instagram", "Twitter", "Snapchat", "Candy Crush", "Steam", "Uber", "Uber Eats", "Barclays Bank", "Monzo Bank", "Norton", "Youtube", "Youtube Gaming", "Netflix", "Rabbit", "Amazon", "Play Store", "Tinder"];
         useralias = ["User", "Customer", "Valued Customer", "Sir/Madam", "macsmith05924"];
@@ -497,7 +519,7 @@
                     continue;
                 }
             }
-            if (["a", "d", "g", "m"].includes(domain.charAt(i)) && !pairdep.includes(domain.charAt(i)) && limit < 1 && !dropped) {
+            if (["a", "d", "g", "m"].indexOf(domain.charAt(i)) && !pairdep.indexOf(domain.charAt(i)) && limit < 1 && !dropped) {
                 if (scaledChance(0.25)) { //chance of homographic attack (10)
                     fakeEmail += pairs[domain.charAt(i)];
                     pairdep.push(domain.charAt(i));
@@ -538,7 +560,9 @@
         }
     }
 
-    function addText(node, ostring, type="plain", url="none"){
+    function addText(node, ostring, type, url){
+        type = type || 'plain';
+        url = url || 'none';
 
         if (!real) { //if fake email
             localmlimit = Math.ceil(ostring.length/75); //local miss limit
